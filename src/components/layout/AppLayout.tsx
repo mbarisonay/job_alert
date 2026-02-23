@@ -1,9 +1,10 @@
-import type { PropsWithChildren } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { BriefcaseBusiness, Sparkles } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import type { PropsWithChildren } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { BriefcaseBusiness, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type AppLayoutProps = PropsWithChildren
+type AppLayoutProps = PropsWithChildren;
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
@@ -18,7 +19,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               <span className="text-sm font-semibold tracking-tight">
                 AI Job Aggregator
               </span>
-              <span className="text-xs text-slate-400">Akıllı iş eşleştirme</span>
+              <span className="text-xs text-slate-400">
+                Akıllı iş eşleştirme
+              </span>
             </div>
           </Link>
 
@@ -28,18 +31,31 @@ export function AppLayout({ children }: AppLayoutProps) {
               <BriefcaseBusiness className="mr-1.5 h-3.5 w-3.5" />
               İş Ara
             </NavItem>
+
+            <div className="ml-4 flex items-center gap-2">
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Giriş
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="default" size="sm">
+                  Kayıt Ol
+                </Button>
+              </Link>
+            </div>
           </nav>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
     </div>
-  )
+  );
 }
 
 type NavItemProps = PropsWithChildren<{
-  to: string
-}>
+  to: string;
+}>;
 
 function NavItem({ to, children }: NavItemProps) {
   return (
@@ -47,13 +63,11 @@ function NavItem({ to, children }: NavItemProps) {
       to={to}
       className={({ isActive }) =>
         cn(
-          'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-slate-300 transition hover:bg-slate-900 hover:text-slate-50',
-          isActive && 'bg-slate-900 text-slate-50',
+          "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-slate-300 transition hover:bg-slate-900 hover:text-slate-50",
+          isActive && "bg-slate-900 text-slate-50",
         )
-      }
-    >
+      }>
       {children}
     </NavLink>
-  )
+  );
 }
-
