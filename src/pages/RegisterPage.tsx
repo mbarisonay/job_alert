@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useParticles } from "@/hooks/useParticles";
+import { BriefcaseBusiness, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ export function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useParticles("particles-register");
 
   async function onSubmit(e: FormEvent): Promise<void> {
     e.preventDefault();
@@ -34,186 +38,200 @@ export function RegisterPage() {
 
     setLoading(true);
     try {
-      // TODO: call registration API
-      // simulate network
       await new Promise((r) => setTimeout(r, 700));
       navigate("/jobs");
-    } catch (err) {
+    } catch {
       setError("Kayıt sırasında bir hata oluştu.");
     } finally {
       setLoading(false);
     }
   }
-  declare global {
-    interface Window {
-      particlesJS?: (tagId: string, config: unknown) => void
-    }
-  }
-
-  useEffect(() => {
-    if (typeof window.particlesJS !== 'undefined') {
-      window.particlesJS('particles-js', {
-        particles: {
-          number: { value: 80, density: { enable: true, value_area: 800 } },
-          color: { value: "#ffffff" },
-          shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
-          opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
-          size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
-          line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
-          move: { enable: true, speed: 6, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } },
-        },
-        interactivity: {
-          detect_on: "canvas",
-          events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
-          modes: { grab: { distance: 400, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } },
-        },
-        retina_detect: true,
-      })
-    } else {
-      console.warn('particlesJS is not defined. The background animation may not work.')
-    }
-  }, [])
 
   return (
-    <AppLayout>
-      <div className="relative mx-auto max-w-md">
-        <div id="particles-js" className="absolute inset-0 -z-10" />
-        <div className="relative z-10">
-          <Card className="mt-16">
-          <CardHeader>
-            <CardTitle>Kayıt Ol</CardTitle>
-          </CardHeader>
+    <div className="relative min-h-screen bg-slate-950">
+      {/* Partikül arka plan - tam ekran, mouse etkileşimli */}
+      <div
+        id="particles-register"
+        className="absolute inset-0 z-0"
+      />
 
-          <CardContent>
-            <form onSubmit={onSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+      {/* Header */}
+      <header className="relative z-20 border-b border-slate-800/50 bg-slate-950/60 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900">
+              <Sparkles className="h-4 w-4 text-emerald-400" />
+            </div>
+            <span className="text-sm font-semibold tracking-tight text-slate-100">
+              AI Job Aggregator
+            </span>
+          </Link>
+          <nav className="flex items-center gap-3 text-xs">
+            <NavItem to="/">Ana Sayfa</NavItem>
+            <NavItem to="/jobs">
+              <BriefcaseBusiness className="mr-1.5 h-3.5 w-3.5" />
+              İş Ara
+            </NavItem>
+            <NavItem to="/login">Giriş</NavItem>
+            <NavItem to="/register">Kayıt Ol</NavItem>
+          </nav>
+        </div>
+      </header>
+
+      {/* Form - ortada */}
+      <div className="relative z-10 flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          <Card className="border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle>Kayıt Ol</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={onSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-slate-300">Ad</label>
+                    <input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      type="text"
+                      required
+                      className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-slate-300">Soyad</label>
+                    <input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      type="text"
+                      required
+                      className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm text-slate-300">Ad</label>
+                  <label className="block text-sm text-slate-300">E-posta</label>
                   <input
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
                     required
                     className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm text-slate-300">Soyad</label>
+                  <label className="block text-sm text-slate-300">Telefon numarası</label>
                   <input
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    type="text"
-                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    type="tel"
+                    placeholder="5xx xxx xx xx"
                     className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm text-slate-300">E-posta</label>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  required
-                  className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-slate-300">
-                  Telefon numarası
-                </label>
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  type="tel"
-                  placeholder="5xx xxx xx xx"
-                  className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-slate-300">
-                  Doğum tarihi
-                </label>
-                <input
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                  type="date"
-                  className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-slate-300">Parola</label>
-                <input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  type="password"
-                  required
-                  minLength={6}
-                  className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-slate-300">
-                  Parola (Tekrar)
-                </label>
-                <input
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  type="password"
-                  required
-                  minLength={6}
-                  className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  id="accept"
-                  type="checkbox"
-                  checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-400"
-                />
-                <label htmlFor="accept" className="text-sm text-slate-300">
-                  Hizmet şartlarını ve gizlilik politikasını kabul ediyorum
-                </label>
-              </div>
-
-              {error && (
-                <div
-                  className="rounded-md bg-rose-900/40 p-2 text-sm text-rose-300"
-                  role="status"
-                  aria-live="polite">
-                  {error}
+                <div>
+                  <label className="block text-sm text-slate-300">Doğum tarihi</label>
+                  <input
+                    value={dob}
+                    onChange={(e) => setDob(e.target.value)}
+                    type="date"
+                    className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
+                  />
                 </div>
-              )}
 
-              <div className="flex items-center justify-between">
-                <div />
-                <Button
-                  type="submit"
-                  size="sm"
-                  className={loading ? "opacity-70" : ""}
-                  disabled={loading}>
-                  {loading ? "Kayıt oluyor..." : "Kayıt Ol"}
-                </Button>
-              </div>
+                <div>
+                  <label className="block text-sm text-slate-300">Parola</label>
+                  <input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                    required
+                    minLength={6}
+                    className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
+                  />
+                </div>
 
-              <p className="text-center text-sm text-slate-400">
-                Zaten üyeyim?{" "}
-                <Link to="/login" className="text-emerald-400 hover:underline">
-                  Giriş yap
-                </Link>
-              </p>
-            </form>
-          </CardContent>
-        </Card>
+                <div>
+                  <label className="block text-sm text-slate-300">Parola (Tekrar)</label>
+                  <input
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    type="password"
+                    required
+                    minLength={6}
+                    className="mt-1 w-full rounded-md border-0 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    id="accept"
+                    type="checkbox"
+                    checked={acceptTerms}
+                    onChange={(e) => setAcceptTerms(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-400"
+                  />
+                  <label htmlFor="accept" className="text-sm text-slate-300">
+                    Hizmet şartlarını ve gizlilik politikasını kabul ediyorum
+                  </label>
+                </div>
+
+                {error && (
+                  <div
+                    className="rounded-md bg-rose-900/40 p-2 text-sm text-rose-300"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between">
+                  <div />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className={loading ? "opacity-70" : ""}
+                    disabled={loading}
+                  >
+                    {loading ? "Kayıt oluyor..." : "Kayıt Ol"}
+                  </Button>
+                </div>
+
+                <p className="text-center text-sm text-slate-400">
+                  Zaten üyeyim?{" "}
+                  <Link to="/login" className="text-emerald-400 hover:underline">
+                    Giriş yap
+                  </Link>
+                </p>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </AppLayout>
+    </div>
+  );
+}
+
+type NavItemProps = {
+  to: string;
+  children: React.ReactNode;
+};
+
+function NavItem({ to, children }: NavItemProps) {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        cn(
+          "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-slate-300 transition hover:bg-slate-900 hover:text-slate-50",
+          isActive && "bg-slate-100 text-slate-950",
+        )
+      }>
+      {children}
+    </NavLink>
   );
 }
