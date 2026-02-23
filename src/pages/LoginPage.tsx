@@ -53,7 +53,7 @@ export function LoginPage() {
       {/* Form - ortada */}
       <div className="relative z-10 flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4">
         <div className="w-full max-w-md">
-          <Card className="border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 backdrop-blur-sm">
+          <Card className="border-slate-300 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-slate-900 dark:text-slate-50">
                 Giriş Yap
@@ -70,7 +70,7 @@ export function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     type="email"
                     required
-                    className="mt-1 w-full rounded-md border border-slate-300 dark:border-0 bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-500"
+                    className="mt-1 w-full rounded-md border border-slate-300 dark:border-0 bg-white/50 dark:bg-slate-800/60 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-500"
                   />
                 </div>
                 <div>
@@ -83,7 +83,7 @@ export function LoginPage() {
                     type="password"
                     required
                     minLength={6}
-                    className="mt-1 w-full rounded-md border border-slate-300 dark:border-0 bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-500"
+                    className="mt-1 w-full rounded-md border border-slate-300 dark:border-0 bg-white/50 dark:bg-slate-800/60 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-500"
                   />
                 </div>
                 <div className="flex items-center justify-between">
