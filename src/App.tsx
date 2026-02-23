@@ -3,9 +3,12 @@ import { LandingPage } from "@/pages/LandingPage";
 import { JobSearchPage } from "@/pages/JobSearchPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
+import { useThemeInit } from "@/store/themeStore";
 import "./index.css";
 
 function App() {
+  useThemeInit();
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />

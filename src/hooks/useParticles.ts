@@ -1,16 +1,18 @@
 import { useEffect, useRef } from "react";
 
-const PARTICLES_CONFIG = {
+type Theme = "light" | "dark";
+
+const getParticlesConfig = (theme: Theme) => ({
   particles: {
     number: { value: 80, density: { enable: true, value_area: 800 } },
-    color: { value: "#ffffff" },
+    color: { value: theme === "dark" ? "#ffffff" : "#1e293b" },
     shape: {
       type: "circle",
       stroke: { width: 0, color: "#000000" },
       polygon: { nb_sides: 5 },
     },
     opacity: {
-      value: 0.5,
+      value: theme === "dark" ? 0.5 : 0.6,
       random: false,
       anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
     },
@@ -22,8 +24,8 @@ const PARTICLES_CONFIG = {
     line_linked: {
       enable: true,
       distance: 150,
-      color: "#ffffff",
-      opacity: 0.4,
+      color: theme === "dark" ? "#ffffff" : "#94a3b8",
+      opacity: theme === "dark" ? 0.4 : 0.3,
       width: 1,
     },
     move: {
@@ -53,35 +55,47 @@ const PARTICLES_CONFIG = {
     },
   },
   retina_detect: true,
-};
+});
 
 type ParticlesWindow = typeof window & {
   particlesJS?: (tagId: string, config: unknown) => void;
   pJSDom?: Array<{ pJS: { fn: { vendors: { destroypJS: () => void } } } }>;
 };
 
-export function useParticles(containerId: string) {
+export function useParticles(containerId: string, theme: Theme = "dark") {
   const initialized = useRef(false);
 
   useEffect(() => {
     const win = window as ParticlesWindow;
 
-    if (initialized.current) return;
-
     const el = document.getElementById(containerId);
     if (!el) return;
+
+    // Destroy existing particles when theme changes
+    if (win.pJSDom && win.pJSDom.length > 0) {
+      try {
+        for (let i = win.pJSDom.length - 1; i >= 0; i--) {
+          win.pJSDom[i].pJS.fn.vendors.destroypJS();
+        }
+        win.pJSDom = [];
+      } catch {
+        // ignore
+      }
+    }
+
+    initialized.current = false;
 
     const timer = setTimeout(() => {
       if (typeof win.particlesJS === "function") {
         initialized.current = true;
-        win.particlesJS(containerId, PARTICLES_CONFIG);
+        win.particlesJS(containerId, getParticlesConfig(theme));
       }
     }, 50);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [containerId]);
+  }, [containerId, theme]);
 
   useEffect(() => {
     return () => {
