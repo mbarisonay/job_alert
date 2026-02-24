@@ -7,6 +7,7 @@ import { useParticles } from "@/hooks/useParticles";
 import { useThemeInit, useThemeStore } from "@/store/themeStore";
 import { BriefcaseBusiness, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiRequest } from "@/lib/api";
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -41,10 +42,29 @@ export function RegisterPage() {
 
     setLoading(true);
     try {
-      await new Promise((r) => setTimeout(r, 700));
-      navigate("/jobs");
-    } catch {
-      setError("Kayıt sırasında bir hata oluştu.");
+      await apiRequest<unknown, {
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+        dateOfBirth?: string;
+      }>("/api/auth/register", "POST", {
+        email,
+        password,
+        firstName,
+        lastName,
+        phone: phone || undefined,
+        dateOfBirth: dob || undefined,
+      });
+
+      navigate("/login");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Kayıt sırasında bir hata oluştu.");
+      }
     } finally {
       setLoading(false);
     }

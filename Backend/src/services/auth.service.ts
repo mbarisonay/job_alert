@@ -6,7 +6,10 @@ import { ApiError } from "../utils/ApiError";
 type RegisterInput = {
   email: string;
   password: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  dateOfBirth?: string;
 };
 
 type LoginInput = {
@@ -18,7 +21,10 @@ type AuthResponse = {
   user: {
     id: string;
     email: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    phone?: string | null;
+    dateOfBirth?: Date | null;
   };
   token: string;
 };
@@ -40,14 +46,24 @@ export async function register(input: RegisterInput): Promise<AuthResponse> {
     data: {
       email: input.email,
       password: hashedPassword,
-      name: input.name,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      phone: input.phone,
+      dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : undefined,
     },
   });
 
   const token = signToken({ userId: user.id, email: user.email });
 
   return {
-    user: { id: user.id, email: user.email, name: user.name },
+    user: {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone ?? undefined,
+      dateOfBirth: user.dateOfBirth ?? undefined,
+    },
     token,
   };
 }
@@ -70,7 +86,14 @@ export async function login(input: LoginInput): Promise<AuthResponse> {
   const token = signToken({ userId: user.id, email: user.email });
 
   return {
-    user: { id: user.id, email: user.email, name: user.name },
+    user: {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone ?? undefined,
+      dateOfBirth: user.dateOfBirth ?? undefined,
+    },
     token,
   };
 }

@@ -6,13 +6,22 @@ export async function registerController(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const { email, password, name } = req.body;
+  const { email, password, firstName, lastName, phone, dateOfBirth } = req.body;
 
-  if (!email || !password || !name) {
-    throw ApiError.badRequest("email, password ve name alanları zorunludur.");
+  if (!email || !password || !firstName || !lastName) {
+    throw ApiError.badRequest(
+      "email, password, firstName ve lastName alanları zorunludur.",
+    );
   }
 
-  const result = await authService.register({ email, password, name });
+  const result = await authService.register({
+    email,
+    password,
+    firstName,
+    lastName,
+    phone,
+    dateOfBirth,
+  });
 
   res.status(201).json({
     success: true,
