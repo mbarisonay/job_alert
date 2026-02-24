@@ -23,6 +23,7 @@ model User {
   educations  Education[]
   projects    Project[]
   languages   Language[]
+  cvUploads   CvUpload[]
 
   @@map("users")
 }
@@ -95,4 +96,21 @@ model Language {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("languages")
+}
+
+model CvUpload {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  fileName       String    @map("file_name")
+  filePath       String    @map("file_path")
+  fileSize       Int       @map("file_size")
+  uploadedAt     DateTime  @default(now()) @map("uploaded_at")
+  analysisResult Json?     @map("analysis_result")
+  rewriteResult  Json?     @map("rewrite_result")
+  analyzedAt     DateTime? @map("analyzed_at")
+  rewrittenAt    DateTime? @map("rewritten_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cv_uploads")
 }
