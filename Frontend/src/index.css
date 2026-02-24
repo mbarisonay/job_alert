@@ -27,3 +27,12 @@ body.dark {
   min-height: 100vh;
 }
 
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+

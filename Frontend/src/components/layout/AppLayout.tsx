@@ -1,13 +1,22 @@
 import type { PropsWithChildren } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { BriefcaseBusiness, Sparkles } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { BriefcaseBusiness, LogOut, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AppLayoutProps = PropsWithChildren;
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const { isAuthenticated, user, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors">
       <header className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur">
@@ -35,16 +44,41 @@ export function AppLayout({ children }: AppLayoutProps) {
 
             <div className="ml-4 flex items-center gap-2">
               <ThemeToggle />
-              <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  Giriş
-                </Button>
-              </Link>
-              <Link to="/register">
-                <Button variant="default" size="sm">
-                  Kayıt Ol
-                </Button>
-              </Link>
+
+              {isAuthenticated ? (
+                <>
+                  <Link to="/dashboard">
+                    <Button variant="ghost" size="sm" className="gap-1.5">
+                      <User className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">
+                        {user?.firstName ?? "Dashboard"}
+                      </span>
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Çıkış</span>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="ghost" size="sm">
+                      Giriş
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button variant="default" size="sm">
+                      Kayıt Ol
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
@@ -69,7 +103,8 @@ function NavItem({ to, children }: NavItemProps) {
           isActive &&
             "bg-slate-200 dark:bg-slate-900 text-slate-900 dark:text-slate-50",
         )
-      }>
+      }
+    >
       {children}
     </NavLink>
   );

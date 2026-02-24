@@ -8,15 +8,91 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
-  phone     String?  @map("phone")
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  firstName   String    @map("first_name")
+  lastName    String    @map("last_name")
+  phone       String?   @map("phone")
   dateOfBirth DateTime? @map("date_of_birth")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  profile     UserProfile?
+  experiences Experience[]
+  educations  Education[]
+  projects    Project[]
+  languages   Language[]
 
   @@map("users")
+}
+
+model UserProfile {
+  id             String  @id @default(uuid())
+  userId         String  @unique @map("user_id")
+  bio            String?
+  avatarUrl      String? @map("avatar_url")
+  githubUrl      String? @map("github_url")
+  linkedinUrl    String? @map("linkedin_url")
+  portfolioUrl   String? @map("portfolio_url")
+  expectedSalary Int?    @map("expected_salary")
+  workPreference String? @map("work_preference")
+  location       String?
+  skills         String[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Experience {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  title       String
+  company     String
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  isCurrent   Boolean   @default(false) @map("is_current")
+  description String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("experiences")
+}
+
+model Education {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  school       String
+  degree       String
+  fieldOfStudy String?   @map("field_of_study")
+  startDate    DateTime  @map("start_date")
+  endDate      DateTime? @map("end_date")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("educations")
+}
+
+model Project {
+  id          String  @id @default(uuid())
+  userId      String  @map("user_id")
+  name        String
+  url         String?
+  description String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("projects")
+}
+
+model Language {
+  id          String @id @default(uuid())
+  userId      String @map("user_id")
+  name        String
+  proficiency String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("languages")
 }
