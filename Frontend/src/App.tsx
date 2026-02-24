@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { LandingPage } from "@/pages/LandingPage";
 import { JobSearchPage } from "@/pages/JobSearchPage";
@@ -13,42 +12,40 @@ import { TrackingPage } from "@/pages/dashboard/TrackingPage";
 import { SettingsPage } from "@/pages/dashboard/SettingsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { useThemeInit } from "@/store/themeStore";
-import { useAuthStore } from "@/store/authStore";
+import { Toaster } from "@/components/ui/toaster";
 import "./index.css";
 
 function App() {
   useThemeInit();
 
-  const hydrate = useAuthStore((s) => s.hydrate);
-  useEffect(() => {
-    hydrate();
-  }, [hydrate]);
-
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/jobs" element={<JobSearchPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <>
+      <Toaster />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/jobs" element={<JobSearchPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      {/* Protected dashboard routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<RecommendedPage />} />
-        <Route path="cv" element={<CvAnalysisPage />} />
-        <Route path="saved" element={<SavedJobsPage />} />
-        <Route path="tracking" element={<TrackingPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-      </Route>
-    </Routes>
+        {/* Protected dashboard routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<RecommendedPage />} />
+          <Route path="cv" element={<CvAnalysisPage />} />
+          <Route path="saved" element={<SavedJobsPage />} />
+          <Route path="tracking" element={<TrackingPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 
