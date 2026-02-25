@@ -97,3 +97,76 @@ export async function login(input: LoginInput): Promise<AuthResponse> {
     token,
   };
 }
+
+// ── Update User ──
+
+type UpdateUserInput = {
+  firstName?: string;
+  lastName?: string;
+  phone?: string | null;
+  dateOfBirth?: string | null;
+};
+
+export async function updateUser(userId: string, input: UpdateUserInput) {
+  const data: Record<string, unknown> = {};
+
+  if (input.firstName !== undefined) data.firstName = input.firstName;
+  if (input.lastName !== undefined) data.lastName = input.lastName;
+  if (input.phone !== undefined) data.phone = input.phone;
+  if (input.dateOfBirth !== undefined) {
+    data.dateOfBirth = input.dateOfBirth ? new Date(input.dateOfBirth) : null;
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data,
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
+      dateOfBirth: true,
+    },
+  });
+
+  return user;
+}
+
+// ── Change Password ──
+
+export async function changePassword(
+  userId: string,
+  oldPassword: string,
+  newPassword: string,
+) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw ApiError.notFound("Kullanıcı bulunamadı.");
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) throw ApiError.unauthorized("Mevcut şifre hatalı.");
+
+  if (newPassword.length < 6) {
+    throw ApiError.badRequest("Yeni şifre en az 6 karakter olmalıdır.");
+  }
+
+  const hashed = await bcrypt.hash(newPassword, SALT_ROUNDS);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashed },
+  });
+}
+
+// ── Delete Account ──
+
+export async function deleteAccount(userId: string, password: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw ApiError.notFound("Kullanıcı bulunamadı.");
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw ApiError.unauthorized("Şifre hatalı.");
+
+  // Cascade delete removes all related records (profile, experiences, etc.)
+  await prisma.user.delete({ where: { id: userId } });
+}
+
