@@ -1,4 +1,38 @@
+import fs from "fs";
+import path from "path";
 import { prisma } from "../config/db";
+
+const AVATARS_DIR = path.join(process.cwd(), "uploads", "avatars");
+
+export async function uploadAvatar(
+  userId: string,
+  file: { originalname: string; buffer: Buffer },
+) {
+  const userDir = path.join(AVATARS_DIR, userId);
+  fs.mkdirSync(userDir, { recursive: true });
+
+  // Delete old avatar files
+  if (fs.existsSync(userDir)) {
+    for (const f of fs.readdirSync(userDir)) {
+      fs.unlinkSync(path.join(userDir, f));
+    }
+  }
+
+  const ext = path.extname(file.originalname) || ".jpg";
+  const fileName = `avatar${ext}`;
+  const filePath = path.join(userDir, fileName);
+  fs.writeFileSync(filePath, file.buffer);
+
+  const avatarUrl = `/uploads/avatars/${userId}/${fileName}`;
+
+  await prisma.userProfile.upsert({
+    where: { userId },
+    create: { userId, avatarUrl },
+    update: { avatarUrl },
+  });
+
+  return { avatarUrl };
+}
 
 export async function getFullProfile(userId: string) {
   const user = await prisma.user.findUnique({

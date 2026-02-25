@@ -7,6 +7,16 @@ export async function getProfile(req: AuthRequest, res: Response) {
   res.json({ success: true, data: profile });
 }
 
+export async function uploadAvatar(req: AuthRequest, res: Response) {
+  const file = (req as any).file;
+  if (!file) {
+    res.status(400).json({ success: false, message: "Dosya yüklenmedi." });
+    return;
+  }
+  const result = await profileService.uploadAvatar(req.user!.userId, file);
+  res.json({ success: true, data: result });
+}
+
 export async function saveAbout(req: AuthRequest, res: Response) {
   const data = req.body as profileService.UpsertProfileInput;
   const profile = await profileService.upsertProfile(req.user!.userId, data);

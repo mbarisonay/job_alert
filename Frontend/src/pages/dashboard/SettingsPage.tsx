@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import {
   AlertTriangle,
   Calendar,
+  Camera,
   Edit3,
   Eye,
   EyeOff,
@@ -99,6 +100,55 @@ export function SettingsPage() {
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch avatar from profile
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/profile`, {
+          headers: authHeaders(),
+        });
+        const data = await res.json();
+        if (res.ok && data.data?.profile?.avatarUrl) {
+          setAvatarUrl(data.data.profile.avatarUrl);
+        }
+      } catch { /* silent */ }
+    })();
+  }, []);
+
+  async function handleAvatarUpload(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Sadece resim dosyaları kabul edilir.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Dosya boyutu 5MB'dan küçük olmalıdır.");
+      return;
+    }
+    setAvatarLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      const res = await fetch(`${API_BASE}/api/profile/avatar`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Yükleme hatası.");
+      setAvatarUrl(data.data.avatarUrl);
+      toast.success("Profil fotoğrafı güncellendi.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Hata oluştu.";
+      toast.error(msg);
+    } finally {
+      setAvatarLoading(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  }
 
   if (!user) return null;
 
@@ -126,12 +176,40 @@ export function SettingsPage() {
           <Card className="border-slate-200 dark:border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 ring-2 ring-emerald-400/40">
-                  <span className="text-xl font-semibold text-emerald-400">
-                    {user.firstName[0]}
-                    {user.lastName[0]}
-                  </span>
+                <div
+                  className="group relative flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-emerald-500/10 ring-2 ring-emerald-400/40 transition-all hover:ring-cyan-400/60"
+                  onClick={() => avatarInputRef.current?.click()}
+                  title="Fotoğraf yükle"
+                >
+                  {avatarLoading ? (
+                    <Spinner size="sm" />
+                  ) : avatarUrl ? (
+                    <img
+                      src={`${API_BASE}${avatarUrl}`}
+                      alt="Avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-xl font-semibold text-emerald-400">
+                      {user.firstName[0]}
+                      {user.lastName[0]}
+                    </span>
+                  )}
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
                 </div>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleAvatarUpload(f);
+                  }}
+                />
                 <div>
                   <CardTitle className="text-lg">
                     {user.firstName} {user.lastName}
