@@ -26,6 +26,7 @@ model User {
   cvUploads   CvUpload[]
   savedJobs   SavedJob[]
   applications JobApplication[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -151,4 +152,36 @@ model JobApplication {
   // cv   CvUpload? @relation(fields: [cvId], references: [id], onDelete: SetNull)
 
   @@map("job_applications")
+}
+
+model Job {
+  id          String   @id @default(uuid())
+  title       String
+  company     String
+  location    String?
+  salaryRange String?  @map("salary_range")
+  type        String?
+  description String?
+  requirements String[]
+  tags        String[]
+  url         String?
+  postedAt    DateTime @default(now()) @map("posted_at")
+  aiScore     Int?     @map("ai_score") // Optional pre-calculated score
+
+  @@map("jobs")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  title     String
+  message   String
+  type      String   @default("JOB_MATCH") // "JOB_MATCH", "SYSTEM", etc.
+  link      String?  @map("job_link")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }

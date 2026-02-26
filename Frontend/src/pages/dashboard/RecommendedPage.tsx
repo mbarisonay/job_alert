@@ -51,163 +51,7 @@ type UserProfileSummary = {
 };
 
 // ── Mock Data ──
-
-const MOCK_RECOMMENDED: RecommendedJob[] = [
-  {
-    id: "rec-1",
-    title: "Senior React Developer",
-    company: "TechVista",
-    location: "İstanbul, Remote",
-    salaryRange: "85.000 – 120.000₺",
-    aiScore: 97,
-    type: "Remote",
-    postedAt: "Bugün",
-    description:
-      "Modern React ve TypeScript kullanarak yeni nesil SaaS platformumuzun frontend mimarisini oluşturacak, component library geliştirip ekibe teknik liderlik yapacak bir Senior Developer arıyoruz.",
-    requirements: [
-      "5+ yıl React / TypeScript deneyimi",
-      "State management (Zustand/Redux) tecrübesi",
-      "Design system ve component library deneyimi",
-      "CI/CD ve test otomasyonu bilgisi",
-      "Takım liderliği deneyimi",
-    ],
-    tags: ["React", "TypeScript", "Zustand", "Tailwind CSS", "Vite"],
-    matchReasons: [
-      { label: "5 yeteneğin eşleşiyor", type: "skill" },
-      { label: "Tercih ettiğin lokasyon", type: "location" },
-      { label: "Beklenen maaş aralığında", type: "salary" },
-      { label: "Remote çalışma tercihin", type: "preference" },
-    ],
-    matchedSkills: ["React", "TypeScript", "Zustand", "Tailwind CSS", "Vite"],
-  },
-  {
-    id: "rec-2",
-    title: "Frontend Architect",
-    company: "FinFlow",
-    location: "Ankara, Hybrid",
-    salaryRange: "100.000 – 140.000₺",
-    aiScore: 93,
-    type: "Hybrid",
-    postedAt: "1 gün önce",
-    description:
-      "Fintech ürünlerimizin frontend altyapısını tasarlayacak, mikro-frontend mimarisi kuracak ve 8 kişilik frontend takımına teknik yönlendirme sağlayacak bir Frontend Architect arıyoruz.",
-    requirements: [
-      "7+ yıl frontend deneyimi",
-      "Mikro-frontend mimarisi bilgisi",
-      "React + TypeScript ustalığı",
-      "Performans optimizasyonu tecrübesi",
-      "Takım mentorlüğü",
-    ],
-    tags: ["React", "TypeScript", "Micro Frontend", "Performance", "Node.js"],
-    matchReasons: [
-      { label: "3 yeteneğin eşleşiyor", type: "skill" },
-      { label: "Deneyim seviyene uygun", type: "experience" },
-      { label: "Maaş beklentinin üstünde", type: "salary" },
-    ],
-    matchedSkills: ["React", "TypeScript", "Node.js"],
-  },
-  {
-    id: "rec-3",
-    title: "Fullstack Developer",
-    company: "GreenTech Solutions",
-    location: "İstanbul, Remote",
-    salaryRange: "70.000 – 100.000₺",
-    aiScore: 89,
-    type: "Remote",
-    postedAt: "2 gün önce",
-    description:
-      "Sürdürülebilir enerji platformumuzun hem frontend hem backend geliştirmelerini yapacak, API tasarımı ve veritabanı optimizasyonu konularında çalışacak bir Fullstack Developer arıyoruz.",
-    requirements: [
-      "React ve Node.js deneyimi",
-      "PostgreSQL veya MongoDB",
-      "REST API tasarımı",
-      "Docker temel bilgisi",
-      "Agile/Scrum deneyimi",
-    ],
-    tags: ["React", "Node.js", "PostgreSQL", "Docker", "TypeScript"],
-    matchReasons: [
-      { label: "4 yeteneğin eşleşiyor", type: "skill" },
-      { label: "Remote çalışma tercihin", type: "preference" },
-      { label: "Tercih ettiğin lokasyon", type: "location" },
-    ],
-    matchedSkills: ["React", "Node.js", "PostgreSQL", "TypeScript"],
-  },
-  {
-    id: "rec-4",
-    title: "React Native Developer",
-    company: "AppForge",
-    location: "İzmir, Ofis",
-    salaryRange: "60.000 – 85.000₺",
-    aiScore: 82,
-    type: "Ofis",
-    postedAt: "3 gün önce",
-    description:
-      "Mobil uygulamamızı React Native ile geliştirmeye devam edecek, yeni özellikler ekleyecek ve performans iyileştirmeleri yapacak bir React Native Developer arıyoruz.",
-    requirements: [
-      "2+ yıl React Native deneyimi",
-      "iOS ve Android bilgisi",
-      "TypeScript",
-      "REST API entegrasyonu",
-      "App Store / Play Store yayınlama",
-    ],
-    tags: ["React Native", "TypeScript", "iOS", "Android", "Firebase"],
-    matchReasons: [
-      { label: "2 yeteneğin eşleşiyor", type: "skill" },
-      { label: "React bilgin transfere uygun", type: "experience" },
-    ],
-    matchedSkills: ["TypeScript", "React Native"],
-  },
-  {
-    id: "rec-5",
-    title: "UI/UX Developer",
-    company: "Creatify Studio",
-    location: "İstanbul, Hybrid",
-    salaryRange: "65.000 – 90.000₺",
-    aiScore: 78,
-    type: "Hybrid",
-    postedAt: "4 gün önce",
-    description:
-      "Design system oluşturma, Figma'dan koda dönüştürme ve animasyon implementasyonu konularında çalışacak, tasarım ve geliştirme arasında köprü olacak bir UI/UX Developer arıyoruz.",
-    requirements: [
-      "React ve CSS/Tailwind ileri seviye",
-      "Figma deneyimi",
-      "Animasyon kütüphaneleri (Framer Motion)",
-      "Erişilebilirlik (a11y) bilgisi",
-      "Design token bilgisi",
-    ],
-    tags: ["React", "Tailwind CSS", "Figma", "Framer Motion", "Design System"],
-    matchReasons: [
-      { label: "2 yeteneğin eşleşiyor", type: "skill" },
-      { label: "Tercih ettiğin lokasyon", type: "location" },
-    ],
-    matchedSkills: ["React", "Tailwind CSS"],
-  },
-  {
-    id: "rec-6",
-    title: "DevOps & Platform Engineer",
-    company: "CloudScale",
-    location: "Remote / Türkiye",
-    salaryRange: "$60k – $85k",
-    aiScore: 58,
-    type: "Remote",
-    postedAt: "1 hafta önce",
-    description:
-      "Kubernetes cluster yönetimi, CI/CD pipeline'ları ve altyapı otomasyonu konularında deneyimli bir DevOps Engineer arıyoruz. IaC araçları ile çalışacaksınız.",
-    requirements: [
-      "AWS veya GCP sertifikası",
-      "Kubernetes & Helm",
-      "Terraform / Pulumi",
-      "GitHub Actions / GitLab CI",
-      "Monitoring (Datadog / Grafana)",
-    ],
-    tags: ["AWS", "Kubernetes", "Terraform", "CI/CD", "Docker"],
-    matchReasons: [
-      { label: "1 yeteneğin eşleşiyor", type: "skill" },
-      { label: "Remote çalışma tercihin", type: "preference" },
-    ],
-    matchedSkills: ["Docker"],
-  },
-];
+// Removed MOCK_RECOMMENDED
 
 const SORT_OPTIONS = [
   { value: "score", label: "AI Skoru" },
@@ -221,7 +65,7 @@ type SortKey = (typeof SORT_OPTIONS)[number]["value"];
 
 export function RecommendedPage() {
   const { user } = useAuthStore();
-  const { saveJob, unsaveJob, isJobSaved, applyToJob, hasApplied, fetchSavedJobs, fetchApplications } =
+  const { saveJob, unsaveJob, isJobSaved, applyToJob, hasApplied, fetchSavedJobs, fetchApplications, availableJobs, fetchAvailableJobs } =
     useJobStore();
 
   const [profile, setProfile] = useState<UserProfileSummary | null>(null);
@@ -234,7 +78,8 @@ export function RecommendedPage() {
   useEffect(() => {
     fetchSavedJobs();
     fetchApplications();
-  }, [fetchSavedJobs, fetchApplications]);
+    fetchAvailableJobs();
+  }, [fetchSavedJobs, fetchApplications, fetchAvailableJobs]);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -278,11 +123,48 @@ export function RecommendedPage() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const sorted = [...MOCK_RECOMMENDED]
+  // Calculate scores and match reasons dynamically
+  const recommendedJobs: RecommendedJob[] = availableJobs.map(job => {
+    const jobTags = job.tags || [];
+    const matchedSkills = jobTags.filter(t => profile?.skills.map(s => s.toLowerCase()).includes(t.toLowerCase()));
+    let score = job.aiScore || 60; // Base score
+    const matchReasons: MatchReason[] = [];
+
+    if (matchedSkills.length > 0) {
+      score += matchedSkills.length * 5;
+      matchReasons.push({ label: `${matchedSkills.length} yeteneğin eşleşiyor`, type: "skill" });
+    }
+
+    if (profile?.location && job.location?.toLowerCase().includes(profile.location.toLowerCase())) {
+      score += 10;
+      matchReasons.push({ label: "Tercih ettiğin lokasyon", type: "location" });
+    }
+
+    if (profile?.workPreference.some(p => job.type?.toLowerCase().includes(p.toLowerCase()))) {
+      score += 10;
+      matchReasons.push({ label: "Çalışma modeline uygun", type: "preference" });
+    }
+
+    // Cap score at 99
+    score = Math.min(score, 99);
+
+    return {
+      ...job,
+      aiScore: score,
+      matchReasons,
+      matchedSkills
+    };
+  });
+
+  const sorted = [...recommendedJobs]
     .filter((j) => j.aiScore >= filterMin)
     .sort((a, b) => {
       if (sortBy === "score") return b.aiScore - a.aiScore;
-      if (sortBy === "date") return 0;
+      if (sortBy === "date") {
+        const dateA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
+        const dateB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+        return dateB - dateA;
+      }
       return 0;
     });
 
@@ -322,6 +204,8 @@ export function RecommendedPage() {
         <ProfileSummaryStrip
           profile={profile}
           userName={user?.firstName ?? "Kullanıcı"}
+          matchedCount={sorted.length}
+          maxScore={sorted.length > 0 ? Math.max(...sorted.map((j) => j.aiScore)) : 0}
         />
       )}
 
@@ -462,9 +346,13 @@ export function RecommendedPage() {
 function ProfileSummaryStrip({
   profile,
   userName,
+  matchedCount,
+  maxScore,
 }: {
   profile: UserProfileSummary;
   userName: string;
+  matchedCount: number;
+  maxScore: number;
 }) {
   const hasData = profile.skills.length > 0 || profile.location;
 
@@ -533,12 +421,12 @@ function ProfileSummaryStrip({
         <MiniStat
           icon={<Zap className="h-3 w-3 text-emerald-500" />}
           label="Eşleşen"
-          value={`${MOCK_RECOMMENDED.length} ilan`}
+          value={`${matchedCount} ilan`}
         />
         <MiniStat
           icon={<TrendingUp className="h-3 w-3 text-blue-500" />}
           label="Yüksek Skor"
-          value={`%${Math.max(...MOCK_RECOMMENDED.map((j) => j.aiScore))}`}
+          value={`%${maxScore}`}
         />
         <MiniStat
           icon={<MapPin className="h-3 w-3 text-violet-500" />}

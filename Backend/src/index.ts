@@ -23,8 +23,14 @@ app.use("/api", apiRoutes);
 
 app.use(errorHandler);
 
+import { startJobMatcherCron } from "./jobs/matcher.job";
+
 async function bootstrap() {
   await connectDatabase();
+  
+  // Start background jobs
+  startJobMatcherCron();
+
   app.listen(env.PORT, () => {
     console.log(`[SERVER] Running on http://localhost:${env.PORT}`);
   });

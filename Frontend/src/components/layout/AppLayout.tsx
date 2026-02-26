@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 import { useAuthStore } from "@/store/authStore";
 import { BriefcaseBusiness, LogOut, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </NavItem>
 
             <div className="ml-4 flex items-center gap-2">
+              <NotificationBell />
               <ThemeToggle />
 
               {isAuthenticated ? (

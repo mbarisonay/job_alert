@@ -101,3 +101,11 @@ export async function deleteApplication(userId: string, id: string) {
     where: { id, userId },
   });
 }
+
+// ─── Available Jobs ───
+
+export async function getAvailableJobs() {
+  return prisma.job.findMany({
+    orderBy: { postedAt: "desc" },
+  });
+}

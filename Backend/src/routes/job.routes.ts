@@ -18,4 +18,7 @@ router.get("/applications", ctrl.getApplications as any);
 router.put("/applications/:id", ctrl.updateApplicationStatus as any);
 router.delete("/applications/:id", ctrl.removeApplication as any);
 
+// ─── Available Jobs ───
+router.get("/available", ctrl.getAvailableJobs as any);
+
 export default router;

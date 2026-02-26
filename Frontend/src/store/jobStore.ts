@@ -47,10 +47,12 @@ export type JobAppRecord = {
 interface JobStore {
   savedJobs: SavedJobRecord[];
   applications: JobAppRecord[];
+  availableJobs: Job[];
   
   // Fetch from DB
   fetchSavedJobs: () => Promise<void>;
   fetchApplications: () => Promise<void>;
+  fetchAvailableJobs: () => Promise<void>;
 
   // Save
   saveJob: (job: Job) => Promise<void>;
@@ -68,6 +70,7 @@ interface JobStore {
 export const useJobStore = create<JobStore>((set, get) => ({
   savedJobs: [],
   applications: [],
+  availableJobs: [],
 
   fetchSavedJobs: async () => {
     try {
@@ -84,6 +87,15 @@ export const useJobStore = create<JobStore>((set, get) => ({
       if (!res.ok) return;
       const data = await res.json();
       set({ applications: data.data || [] });
+    } catch { /* silent */ }
+  },
+
+  fetchAvailableJobs: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/jobs/available`, { headers: authHeaders() });
+      if (!res.ok) return;
+      const data = await res.json();
+      set({ availableJobs: data.data || [] });
     } catch { /* silent */ }
   },
 

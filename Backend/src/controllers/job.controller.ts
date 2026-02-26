@@ -49,3 +49,9 @@ export async function removeApplication(req: AuthRequest, res: Response) {
   await jobService.deleteApplication(req.user!.userId, req.params.id as string);
   res.json({ success: true });
 }
+
+// ─── Available Jobs ───
+export async function getAvailableJobs(_req: AuthRequest, res: Response) {
+  const jobs = await jobService.getAvailableJobs();
+  res.json({ success: true, data: jobs });
+}
