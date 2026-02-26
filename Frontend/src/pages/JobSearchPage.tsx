@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { JobCard } from "@/features/jobs/components/JobCard";
@@ -143,6 +143,12 @@ const MOCK_JOBS: Job[] = [
 export function JobSearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [mobileDetailId, setMobileDetailId] = useState<string | null>(null);
+  const { fetchSavedJobs, fetchApplications } = useJobStore();
+
+  useEffect(() => {
+    fetchSavedJobs();
+    fetchApplications();
+  }, [fetchSavedJobs, fetchApplications]);
 
   const q = searchParams.get("q") ?? "";
 
@@ -266,11 +272,11 @@ function SearchFilters({ q, setSearchParams }: SearchFiltersProps) {
 
 function JobDetail({ job }: { job: Job }) {
   const { isAuthenticated } = useAuthStore();
-  const { saveJob, unsaveJob, isJobSaved, applyToJob, hasApplied } =
+  const { saveJob, unsaveJob, savedJobs, isJobSaved, applyToJob, hasApplied } =
     useJobStore();
 
   const saved = isJobSaved(job.id);
-  const applied = hasApplied(job.id);
+  const applied = hasApplied(job.title, job.company);
 
   return (
     <div className="sticky top-[4.5rem] flex h-[calc(100vh-10rem)] flex-col rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80">
@@ -349,12 +355,15 @@ function JobDetail({ job }: { job: Job }) {
               variant="outline"
               size="sm"
               className="gap-1.5"
-              onClick={() => {
+              onClick={async () => {
                 if (saved) {
-                  unsaveJob(job.id);
-                  toast.info("İlan kaydedilenlerden çıkarıldı.");
+                  const sJob = savedJobs.find((j) => j.jobId === job.id);
+                  if (sJob) {
+                    await unsaveJob(sJob.id);
+                    toast.info("İlan kaydedilenlerden çıkarıldı.");
+                  }
                 } else {
-                  saveJob(job);
+                  await saveJob(job);
                   toast.success("İlan kaydedildi!");
                 }
               }}

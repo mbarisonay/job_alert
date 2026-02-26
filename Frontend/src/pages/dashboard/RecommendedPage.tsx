@@ -221,7 +221,7 @@ type SortKey = (typeof SORT_OPTIONS)[number]["value"];
 
 export function RecommendedPage() {
   const { user } = useAuthStore();
-  const { saveJob, unsaveJob, isJobSaved, applyToJob, hasApplied } =
+  const { saveJob, unsaveJob, isJobSaved, applyToJob, hasApplied, fetchSavedJobs, fetchApplications } =
     useJobStore();
 
   const [profile, setProfile] = useState<UserProfileSummary | null>(null);
@@ -230,6 +230,11 @@ export function RecommendedPage() {
   const [filterMin, setFilterMin] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [detailJob, setDetailJob] = useState<RecommendedJob | null>(null);
+
+  useEffect(() => {
+    fetchSavedJobs();
+    fetchApplications();
+  }, [fetchSavedJobs, fetchApplications]);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -398,7 +403,7 @@ export function RecommendedPage() {
             job={job}
             rank={idx + 1}
             saved={isJobSaved(job.id)}
-            applied={hasApplied(job.id)}
+            applied={hasApplied(job.title, job.company)}
             onSave={() => {
               saveJob(job);
               toast.success("İlan kaydedildi!");
@@ -431,7 +436,7 @@ export function RecommendedPage() {
         <JobDetailModal
           job={detailJob}
           saved={isJobSaved(detailJob.id)}
-          applied={hasApplied(detailJob.id)}
+          applied={hasApplied(detailJob.title, detailJob.company)}
           profileSkills={profile?.skills ?? []}
           onSave={() => {
             saveJob(detailJob);

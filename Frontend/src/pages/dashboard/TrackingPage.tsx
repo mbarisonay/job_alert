@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useJobStore, type Application, type ApplicationStatus } from "@/store/jobStore";
+import { useEffect, useState } from "react";
+import { useJobStore, type JobAppRecord, type ApplicationStatus } from "@/store/jobStore";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
@@ -30,35 +30,28 @@ type Column = {
 
 const COLUMNS: Column[] = [
   {
-    id: "applied",
+    id: "APPLIED",
     label: "Başvuruldu",
     color: "text-blue-600 dark:text-blue-400",
     bgColor: "bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20",
     icon: <Send className="h-4 w-4" />,
   },
   {
-    id: "screening",
-    label: "Ön Eleme",
-    color: "text-amber-600 dark:text-amber-400",
-    bgColor: "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20",
-    icon: <ShieldCheck className="h-4 w-4" />,
-  },
-  {
-    id: "interview",
+    id: "INTERVIEW",
     label: "Mülakat",
     color: "text-violet-600 dark:text-violet-400",
     bgColor: "bg-violet-50 dark:bg-violet-500/10 border-violet-200 dark:border-violet-500/20",
     icon: <Users className="h-4 w-4" />,
   },
   {
-    id: "offer",
+    id: "OFFER",
     label: "Teklif",
     color: "text-emerald-600 dark:text-emerald-400",
     bgColor: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20",
     icon: <Star className="h-4 w-4" />,
   },
   {
-    id: "rejected",
+    id: "REJECTED",
     label: "Reddedildi",
     color: "text-red-500 dark:text-red-400",
     bgColor: "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20",
@@ -67,11 +60,15 @@ const COLUMNS: Column[] = [
 ];
 
 export function TrackingPage() {
-  const { applications, moveApplication, removeApplication, updateNote } =
+  const { applications, moveApplication, removeApplication, updateNote, fetchApplications } =
     useJobStore();
 
   const [draggedId, setDraggedId] = useState<string | null>(null);
-  const [noteModal, setNoteModal] = useState<Application | null>(null);
+  const [noteModal, setNoteModal] = useState<JobAppRecord | null>(null);
+
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
 
   const getColumnApps = (status: ApplicationStatus) =>
     applications.filter((a) => a.status === status);
@@ -91,7 +88,7 @@ export function TrackingPage() {
     setDraggedId(null);
   };
 
-  const handleMoveForward = (app: Application) => {
+  const handleMoveForward = (app: JobAppRecord) => {
     const currentIdx = COLUMNS.findIndex((c) => c.id === app.status);
     if (currentIdx < COLUMNS.length - 2) {
       const next = COLUMNS[currentIdx + 1];
@@ -194,7 +191,7 @@ export function TrackingPage() {
                         toast.info("Başvuru silindi.");
                       }}
                       onMoveForward={
-                        col.id !== "offer" && col.id !== "rejected"
+                        col.id !== "OFFER" && col.id !== "REJECTED"
                           ? () => handleMoveForward(app)
                           : undefined
                       }
@@ -233,7 +230,7 @@ function KanbanCard({
   onMoveForward,
   onOpenNote,
 }: {
-  app: Application;
+  app: JobAppRecord;
   onDragStart: () => void;
   onRemove: () => void;
   onMoveForward?: () => void;
@@ -255,7 +252,7 @@ function KanbanCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-1">
             <h4 className="truncate text-xs font-semibold text-slate-900 dark:text-slate-50">
-              {app.job.title}
+              {app.title}
             </h4>
             <button
               type="button"
@@ -266,7 +263,7 @@ function KanbanCard({
             </button>
           </div>
           <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
-            {app.job.company}
+            {app.company}
           </p>
         </div>
       </div>
@@ -277,18 +274,10 @@ function KanbanCard({
             <Clock className="h-2.5 w-2.5" />
             {appliedDate}
           </span>
-          {app.job.aiScore && (
-            <Badge
-              variant={app.job.aiScore >= 80 ? "success" : "warning"}
-              className="px-1.5 py-0 text-[9px]"
-            >
-              {app.job.aiScore}%
-            </Badge>
-          )}
         </div>
 
         <div className="flex items-center gap-1">
-          {app.note && (
+          {app.notes && (
             <MessageSquareText className="h-3 w-3 text-blue-400" />
           )}
           <button
@@ -322,11 +311,11 @@ function NoteModal({
   onSave,
   onClose,
 }: {
-  app: Application;
+  app: JobAppRecord;
   onSave: (note: string) => void;
   onClose: () => void;
 }) {
-  const [text, setText] = useState(app.note);
+  const [text, setText] = useState(app.notes || "");
 
   return (
     <div
@@ -342,9 +331,9 @@ function NoteModal({
             <Briefcase className="h-4 w-4 text-slate-400" />
             <div>
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                {app.job.title}
+                {app.title}
               </h3>
-              <p className="text-[11px] text-slate-500">{app.job.company}</p>
+              <p className="text-[11px] text-slate-500">{app.company}</p>
             </div>
           </div>
           <button

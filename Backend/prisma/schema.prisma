@@ -24,6 +24,8 @@ model User {
   projects    Project[]
   languages   Language[]
   cvUploads   CvUpload[]
+  savedJobs   SavedJob[]
+  applications JobApplication[]
 
   @@map("users")
 }
@@ -113,4 +115,40 @@ model CvUpload {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("cv_uploads")
+}
+
+model SavedJob {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  jobId     String?  @map("job_id")
+  title     String
+  company   String
+  location  String?
+  workModel String?  @map("work_model")
+  salary    String?
+  jobUrl    String?  @map("job_url")
+  savedAt   DateTime @default(now()) @map("saved_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId]) // A user can save a specific job only once
+  @@map("saved_jobs")
+}
+
+model JobApplication {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  title     String
+  company   String
+  location  String?
+  jobUrl    String?  @map("job_url")
+  status    String   @default("APPLIED") // "APPLIED", "INTERVIEW", "OFFER", "REJECTED"
+  appliedAt DateTime @default(now()) @map("applied_at")
+  notes     String?
+  cvId      String?  @map("cv_id")
+
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // cv   CvUpload? @relation(fields: [cvId], references: [id], onDelete: SetNull)
+
+  @@map("job_applications")
 }

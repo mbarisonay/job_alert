@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { useJobStore } from "@/store/jobStore";
+import { useEffect, useState } from "react";
+import { type SavedJobRecord, useJobStore } from "@/store/jobStore";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
-import type { Job } from "@/features/jobs/types";
 import {
   Bookmark,
   Briefcase,
@@ -20,9 +19,14 @@ import {
 } from "lucide-react";
 
 export function SavedJobsPage() {
-  const { savedJobs, unsaveJob, applyToJob, hasApplied } = useJobStore();
+  const { savedJobs, unsaveJob, applyToJob, hasApplied, fetchSavedJobs, fetchApplications } = useJobStore();
   const [search, setSearch] = useState("");
-  const [detailJob, setDetailJob] = useState<Job | null>(null);
+  const [detailJob, setDetailJob] = useState<SavedJobRecord | null>(null);
+
+  useEffect(() => {
+    fetchSavedJobs();
+    fetchApplications();
+  }, [fetchSavedJobs, fetchApplications]);
 
   const filtered = savedJobs.filter((j) => {
     if (!search) return true;
@@ -30,7 +34,7 @@ export function SavedJobsPage() {
     return (
       j.title.toLowerCase().includes(q) ||
       j.company.toLowerCase().includes(q) ||
-      j.location.toLowerCase().includes(q)
+      (j.location && j.location.toLowerCase().includes(q))
     );
   });
 
@@ -93,13 +97,25 @@ export function SavedJobsPage() {
             <SavedJobCard
               key={job.id}
               job={job}
-              applied={hasApplied(job.id)}
-              onRemove={() => {
-                unsaveJob(job.id);
+              applied={hasApplied(job.title, job.company)}
+              onRemove={async () => {
+                await unsaveJob(job.id);
                 toast.info("İlan kaydedilenlerden çıkarıldı.");
               }}
-              onApply={() => {
-                applyToJob(job);
+              onApply={async () => {
+                await applyToJob({
+                  id: job.jobId || job.id,
+                  title: job.title,
+                  company: job.company,
+                  location: job.location || "",
+                  salaryRange: job.salary || "",
+                  type: job.workModel || "Remote",
+                  aiScore: 80,
+                  postedAt: job.savedAt,
+                  description: "",
+                  requirements: [],
+                  tags: []
+                });
                 toast.success("Başvurunuz kaydedildi!");
               }}
               onDetail={() => setDetailJob(job)}
@@ -132,7 +148,7 @@ function SavedJobCard({
   onApply,
   onDetail,
 }: {
-  job: Job;
+  job: SavedJobRecord;
   applied: boolean;
   onRemove: () => void;
   onApply: () => void;
@@ -166,47 +182,32 @@ function SavedJobCard({
         </div>
 
         <div className="flex flex-wrap gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-          <span className="flex items-center gap-1">
-            <MapPin className="h-3 w-3" />
-            {job.location}
-          </span>
-          {job.salaryRange && (
+          {job.location && (
             <span className="flex items-center gap-1">
-              <PiggyBank className="h-3 w-3" />
-              {job.salaryRange}
+              <MapPin className="h-3 w-3" />
+              {job.location}
             </span>
           )}
-          {job.postedAt && (
+          {job.salary && (
+            <span className="flex items-center gap-1">
+              <PiggyBank className="h-3 w-3" />
+              {job.salary}
+            </span>
+          )}
+          {job.savedAt && (
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              {job.postedAt}
+              {new Date(job.savedAt).toLocaleDateString("tr-TR")}
             </span>
           )}
         </div>
 
-        {job.tags && (
-          <div className="flex flex-wrap gap-1">
-            {job.tags.slice(0, 3).map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-              >
-                {t}
-              </span>
-            ))}
-            {job.tags.length > 3 && (
-              <span className="text-[10px] text-slate-400">
-                +{job.tags.length - 3}
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-        <Badge variant={job.aiScore >= 80 ? "success" : "warning"}>
+        <Badge variant="success">
           <Sparkles className="mr-1 h-2.5 w-2.5" />
-          {job.aiScore}%
+          Kayıtlı
         </Badge>
 
         <div className="flex gap-1.5">
@@ -245,7 +246,7 @@ function SavedJobCard({
 
 // ── Detail Modal ──
 
-function JobDetailModal({ job, onClose }: { job: Job; onClose: () => void }) {
+function JobDetailModal({ job, onClose }: { job: SavedJobRecord; onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
@@ -279,42 +280,25 @@ function JobDetailModal({ job, onClose }: { job: Job; onClose: () => void }) {
           </div>
 
           <div className="flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
-              {job.location}
-            </span>
-            {job.salaryRange && (
+            {job.location && (
               <span className="flex items-center gap-1">
-                <PiggyBank className="h-3.5 w-3.5" />
-                {job.salaryRange}
+                <MapPin className="h-3.5 w-3.5" />
+                {job.location}
               </span>
             )}
+            {job.salary && (
+              <span className="flex items-center gap-1">
+                <PiggyBank className="h-3.5 w-3.5" />
+                {job.salary}
+              </span>
+            )}
+            {job.jobUrl && (
+              <a href={job.jobUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-cyan-600 hover:underline">
+                <ExternalLink className="h-3.5 w-3.5" />
+                Orijinal İlana Git
+              </a>
+            )}
           </div>
-
-          {job.description && (
-            <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
-              {job.description}
-            </p>
-          )}
-
-          {job.requirements && (
-            <div>
-              <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Aranan Nitelikler
-              </h4>
-              <ul className="space-y-1">
-                {job.requirements.map((r, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300"
-                  >
-                    <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
-                    {r}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
     </div>
